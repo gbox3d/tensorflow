@@ -1,3 +1,4 @@
 object_detector/data/
 .ipynb_checkpoints/
 .vscode/
+training_1/
