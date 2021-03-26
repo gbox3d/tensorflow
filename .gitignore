@@ -3,3 +3,4 @@ object_detector/data/
 .vscode/
 training_1/
 basic/*.h5
+.DS_Store
