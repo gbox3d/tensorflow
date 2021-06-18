@@ -5,10 +5,7 @@ import time
 
 import cv2
 import torch
-import torch.backends.cudnn as cudnn
 import torchvision
-import yaml
-from numpy import random
 import numpy as np
 
 # import tensorflow as tf
@@ -23,22 +20,8 @@ import PIL.ImageFont as ImageFont
 
 from IPython.display import display
 
-import sys
-
-sys.path.append("../../yolov5")
-
-# from models.experimental import attempt_load
-# from utils.datasets import LoadStreams, LoadImages
-# from utils.general import check_img_size, check_requirements, check_imshow,  apply_classifier, \
-    # scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-# from utils.plots import colors, plot_one_box
-# from utils.torch_utils import select_device
-
 print(cv2.__version__)
-# print(tf.__version__)
 #%%
-
-
 def xyxy2xywh(x):
     # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
     y = x.clone() if isinstance(x, torch.Tensor) else np.copy(x)
@@ -183,9 +166,10 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
 
     return output
 
+
 #%%
 weights = '../../yolov5/yolov5s-fp16.tflite'
-# device = torch.device('cpu')
+# weights = '../../yolov5/yolov5s.tflite'
 imgsz = (640,640)
 
 #%% init interpreter
@@ -196,6 +180,9 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
+print(input_details)
+print(output_details)
+
 #%% load image
 image_path = '../res/bus.jpg'
 img0 = cv2.imread(image_path)  # BGR
@@ -205,27 +192,18 @@ img = letterbox(img0, 640, stride=None, auto=False)[0]
 np_img = img.copy()
 
 # Convert
-img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
+img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB
 img = np.ascontiguousarray(img)
 
-#%% 토치로 인풋만들기 to torch tensor
-# img = torch.from_numpy(img).to(device)
-# img = img.float()  # uint8 to fp16/32
-# img /= 255.0  # 0 - 255 to 0.0 - 1.0
-# if img.ndimension() == 3:
-#     img = img.unsqueeze(0)
-
-# print(img.shape)
-# input_data = img.permute(0, 2, 3, 1).cpu().numpy()
-# print(input_data.shape)
-#%%
-_startTick = time.time()
+#%% 입력데이터 만들기 
 # numpy만으로 입력만들기 
 input_data = np.expand_dims(img, axis=0)
 input_data = np.float32(input_data)/255.0
 input_data = np.einsum('klij->kijl',input_data)
 print(input_data.shape)
 
+#%%추론하기 
+_startTick = time.time()
 interpreter.set_tensor(input_details[0]['index'], input_data)
 interpreter.invoke()
 pred = interpreter.get_tensor(output_details[0]['index'])
@@ -237,12 +215,11 @@ pred[..., 2] *= imgsz[1]  # w
 pred[..., 3] *= imgsz[0]  # h
 pred = torch.tensor(pred)
 print(f'invoke time :  { time.time() - _startTick }')
+# pred = my_non_max_suppression(pred, 0.25, 0.45, None, False,max_det=1000)
 
-#%%
+#%% 추론에서 나온 결과값 NMS하여 최종 결과물 만들기 (yolo 의 특징적인 부분)
 # Apply NMS
-pred = non_max_suppression(pred, 0.25, 0.45, None, False,
-                  max_det=1000)
-#%%
+pred = non_max_suppression(pred, 0.25, 0.45, None, False,max_det=1000)
 _pred = [
             [
                 (
