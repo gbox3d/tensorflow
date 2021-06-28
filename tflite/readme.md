@@ -4,9 +4,9 @@
 * onnx -> pb  
 필수 모듈
 ```sh
-pip install tensorflow 
-pip install tensorflow-addons
-pip install onnx-tf 
+pip install tensorflow==2.5.0
+pip install tensorflow-addons==0.13.0
+pip install onnx-tf==1.8.0
 ```
 
 convert_tf.py 소스 참고

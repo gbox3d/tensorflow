@@ -2,10 +2,10 @@
 from onnx_tf.backend import prepare
 import onnx
 
-print("module load ok")
+print(f"module load ok {onnx.__version__}")
 
 # %%
-TF_PATH = "./my_yolov5s.pb" # where the representation of tensorflow model will be stored
+TF_PATH = "./pbout" # where the representation of tensorflow model will be stored
 ONNX_PATH = "./yolov5s.onnx" # path to my existing ONNX model
 onnx_model = onnx.load(ONNX_PATH)  # load onnx model
 print('onnx ok ')
