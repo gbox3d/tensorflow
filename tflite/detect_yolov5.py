@@ -168,7 +168,7 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
 
 
 #%%
-weights = '../../yolov5/yolov5s-fp16.tflite'
+weights = './yolov5s-fp16.tflite'
 # weights = '../../yolov5/yolov5s.tflite'
 imgsz = (640,640)
 

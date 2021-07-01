@@ -1,12 +1,12 @@
 
 ## convert to tfLite 
 
-### pt -> tflite
+### yolov5 pt -> tflite
 
 https://colab.research.google.com/drive/19mGngavtFGJIjfDcG6K-t3jeMqorM9Ti?usp=sharing
 
 
-### pt->onnx->tflite
+### yolov5 pt->onnx->tflite
 
 yolov5에서 공식적으로 지원하는 방법인듯한데 아직은 미완성 같다.  
 21.6.18 현재 onnx에서 tflite 컨버팅은 되나 제데로 읽어서 사용할수없다.  
